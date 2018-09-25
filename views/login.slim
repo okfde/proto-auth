@@ -1,0 +1,13 @@
+- if params[:status]
+  p= params[:status]
+
+p= session[:user_id]
+
+form action="login" method='POST'
+  p
+    label for='username' username
+    input type='text' name='username'
+  p
+    label for='password' password
+    input type='password' name='password'
+  input type='submit' value='login'
