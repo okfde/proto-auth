@@ -1,3 +1,105 @@
+:root {
+  --color-blue: #09c;
+  --color-pink: #ff0080;
+  --color-pink-bg: rgba(255, 0, 128, 0.1);
+  --color-grey: #aaa;
+  --color-green: #99cc00;
+  --color-green-bg: rgba(153, 204, 0, 0.1);
+}
+
 body {
-  background-color: hotpink;
+  margin: 0;
+  font-size: 1rem;
+  font-family: sans-serif;
+  line-height: 1.55;
+  color: #333;
+}
+
+a {
+  color: var(--color-blue);
+}
+
+.btn {
+  display: inline-block;
+  padding: 4px 10px;
+  color: var(--color-blue);
+  border: 2px var(--color-blue) solid;
+  text-decoration: none;
+  transition: background-color 200ms ease;
+}
+
+.btn:hover,
+.btn:active {
+  color: white;
+  background-color: var(--color-blue);
+}
+
+hr {
+  margin: 2rem 0;
+  border: solid 1px var(--color-grey);
+  border-bottom: none;
+}
+
+.wrapper {
+  padding: 0.5rem 1rem 2rem;
+  margin: 1rem 3rem;
+  max-width: 400px;
+  box-shadow: 0 0 1px 1px var(--color-grey);
+}
+
+.form-group label,
+.form-group input {
+  display: block;
+}
+
+.form-group input {
+  padding: 0.5em;
+  border: 1px solid var(--color-grey);
+  border-radius: 2px;
+}
+
+.form-group input:invalid {
+  box-shadow: 2px 2px 0 0 var(--color-pink);
+  border-color: var(--color-pink);
+}
+
+.form-group input:valid {
+  box-shadow: 2px 2px 0 0 var(--color-blue);
+  border-color: var(--color-blue);
+}
+
+input[type='submit'] {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.help {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.m-t {
+  margin-top: 1rem;
+}
+
+.flash {
+  border: 2px solid currentColor;
+  padding: .2em .5em;
+  border-radius: 3px;
+}
+
+.flash .status {
+  font-weight: 600;
+}
+
+.flash.success {
+  color: var(--color-green);
+  border-color: var(--color-green);
+  background-color: var(--color-green-bg);
+}
+.flash.error {
+  color: var(--color-pink);
+  border-color: var(--color-pink);
+  background-color: var(--color-pink-bg);
 }

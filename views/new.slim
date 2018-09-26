@@ -1,0 +1,41 @@
+- if params[:status]
+  p.flash.error
+    span.status="#{params[:status]}! "
+    span= params[:message] if params[:message]
+
+.body
+  - if @ropen
+    form action="/create" method='POST'
+      p.form-group
+        label for='username' Voller Name *
+        input type='text' name='full_name' required='true'
+        span.help Das ist nur für uns und wird nicht im Chat angezeigt
+
+      p.form-group
+        label for='username' Username *
+        input type='text' name='username' required='true'
+        span.help Das ist der username wie er im Chat angezeigt wird.
+        span.help Damit kannst du dich auch hier einloggen um dein Passwort zu ändern
+
+      p.form-group
+        label for='email' Email *
+        input type='email' name='email' required='true'
+        span.help Email ist auch nur für uns und wird nicht öffentlich gemacht
+
+      p.form-group
+        label for='password' Passwort *
+        input type='password' name='password' required='true'
+
+      p.form-group
+        label for='password_confirmation' Passwort bestätigen *
+        input type='password' name='password_confirmation' required='true'
+
+      input.btn.m-t type='submit' value='Account anlegen'
+
+      p Pflichtfelder sind mit * markiert
+
+  - else
+    p Neuanmeldung zur Zeit nicht möglich
+
+  p
+    a href="/login" Zurück

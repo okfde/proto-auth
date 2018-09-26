@@ -1,3 +1,12 @@
-h2 hello person
-p= @person.dn
-p= session[:user_id]
+- if params[:status]
+  p.flash.success
+    span.status="#{params[:status]}! "
+    span= params[:message] if params[:message]
+
+.body
+  h2= "Ahoy, #{ session[:uid]}!"
+  p
+    a href="/profile/#{session[:uid]}/password" Passwort ändern
+
+  p
+    a.btn href="/logout" Logout
