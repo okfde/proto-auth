@@ -3,21 +3,42 @@ require "spec_helper"
 describe App do
   let(:app) { App.new }
 
+  session_data = { user_dn: '1234', uid: '1234' }
+
   context 'GET /' do
     context 'given user is logged in' do
-      it 'redirects'
+      let(:response) { get '/', {}, 'rack.session' => session_data }
+      it 'redirects to /profile' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/profile'
+      end
     end
+
     context 'given user is not logged in' do
-      it 'redirects'
+      let(:response) { get "/" }
+      it 'redirects to /login' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/login'
+      end
     end
   end
 
   context 'GET /login' do
     context 'given user is logged in' do
-      it 'redirects'
+      let(:response) { get '/login', {}, 'rack.session' => session_data }
+      it 'redirects to /profile' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/profile'
+      end
     end
+
     context 'given user is not logged in' do
-      it 'renders'
+      let(:response) { get "/login" }
+
+      it 'renders :login template' do
+        expect(response.status).to eq 200
+        expect(response.body).to include 'Neuen Account anlegen'
+      end
     end
   end
 
