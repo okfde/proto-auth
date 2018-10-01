@@ -40,7 +40,7 @@ Copy .env.sample from the container to your local file path, edit the values, an
 ``` bash
 $ docker cp containerID:/var/www/proto-auth/.env.sample ./.env
 $ vi ./.env
-$ docker cp .env containerID:/var/www/proto-auth/.env`
+$ docker cp .env containerID:/var/www/proto-auth/.env
 ```
 
 Then restart the container (the app only loads .env on start up)
