@@ -20,10 +20,23 @@ Run `$ bundle exec thin start` to start the server.
 
 ## Docker
 
-### build
+### Build
+
+Assuming you're in the directory, run
 
 `$ docker build -t proto-auth .`
 
-### run
+### Run
 
-`$ docker run -d --env-file ./.env  proto-auth:latest`
+Run container in the background.
+`$ docker run -d proto-auth:latest`
+
+This command gives you back the container ID. You need this!
+
+Copy .env file into container (path is defined in the Dockerfile)
+`$ docker cp .env containerID:/var/www/proto-auth/.env`
+
+Then restart the container (the app only loads .env on start up)
+`$ docker restart containerID`
+
+That should be it!
