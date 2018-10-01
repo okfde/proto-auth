@@ -1,6 +1,6 @@
-require "app"
-require "rack/test"
-require "rspec-html-matchers"
+require 'app'
+require 'rack/test'
+require 'rspec-html-matchers'
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
@@ -9,6 +9,6 @@ end
 
 RSpec::Matchers.define(:redirect_to) do |url|
   match do |response|
-    response.status == 302 && response.headers['Location'] == url
+    response.status == 302 && response.location.match(url)
   end
 end

@@ -6,6 +6,11 @@ describe App do
 
   session_data = { user_dn: 'uid=fakeuser,ou=people,dc=fake,dc=xyz',
                    uid: 'fakeuser' }
+  new_account_data = { full_name: 'fakey mcfake',
+                       user_name: 'fakeuser',
+                       password: 'apassword',
+                       password_confirmation: 'apassword',
+                       email: 'email@example.com' }
 
   shared_examples_for 'raises 403' do
     it 'raises 403 Error' do
@@ -16,8 +21,7 @@ describe App do
 
   shared_examples_for 'redirects to /login' do
     it 'redirects to /login' do
-      expect(response.status).to eq 302
-      expect(response.location).to match '/login'
+      expect(response).to redirect_to '/login'
     end
   end
 
@@ -25,8 +29,7 @@ describe App do
     context 'given user is logged in' do
       let(:response) { get '/', {}, 'rack.session' => session_data }
       it 'redirects to /profile' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/profile'
+        expect(response).to redirect_to '/profile'
       end
     end
 
@@ -40,8 +43,7 @@ describe App do
     context 'given user is logged in' do
       let(:response) { get '/login', {}, 'rack.session' => session_data }
       it 'redirects to /profile' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/profile'
+        expect(response).to redirect_to '/profile'
       end
     end
 
@@ -59,10 +61,20 @@ describe App do
 
   context 'POST login' do
     context 'given credentials are valid' do
-      it 'redirects'
+      let(:response) { post "/login", { username: 'fakeuser',
+                                        password: 'finepassword'} }
+      pending 'redirects to /profile' do
+        expect(response).to redirect_to '/profile'
+      end
     end
+
     context 'given credentials are not correct' do
-      it 'redirects'
+      let(:response) { post "/login", { username: 'fakeuser',
+                                        password: 'finepassword'} }
+      include_examples 'redirects to /login'
+      it 'sends back error message' do
+        expect(response.location).to match 'Wrong username or password'
+      end
     end
   end
 
@@ -70,8 +82,7 @@ describe App do
     context 'given user is logged in' do
       let(:response) { get '/profile', {}, 'rack.session' => session_data }
       it 'redirects to /profile/:username' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/profile/fakeuser'
+        expect(response).to redirect_to '/profile/fakeuser'
       end
     end
     context 'given user is  not logged in' do
@@ -144,8 +155,7 @@ describe App do
                               new_password_confirmation: '' },
                             'rack.session' => session_data }
       it 'redirects to password form' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/profile/fakeuser/password'
+        expect(response).to redirect_to '/profile/fakeuser/password'
         expect(response.location).to match 'Password and confirmation do not match'
       end
     end
@@ -156,8 +166,7 @@ describe App do
                               new_password_confirmation: 'new and shiny' },
                             'rack.session' => session_data }
       it 'redirects to password form' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/profile/fakeuser/password'
+        expect(response).to redirect_to '/profile/fakeuser/password'
         expect(response.location).to match 'Password and confirmation do not match'
       end
     end
@@ -171,20 +180,54 @@ describe App do
 
   context 'GET /new' do
     context 'given registration is closed' do
-      it 'renders'
+      let(:response) { get '/new' }
+
+      it 'renders the :new template' do
+        ENV['REGISTRATION_OPEN'] = 'false'
+        expect(response.status).to eq 200
+        expect(response.body).to have_tag(:p,
+                                          text: 'Neuanmeldung zur Zeit nicht möglich')
+        expect(response.body).to have_tag(:a, href: '/login', text: 'Zurück')
+        ENV['REGISTRATION_OPEN'] = 'true'
+      end
     end
+
     context 'given registration is open' do
-      it 'renders'
+      let(:response) { get '/new' }
+
+      it 'renders the :new template' do
+        expect(response.status).to eq 200
+        expect(response.body).to have_tag(:label, text: 'Voller Name *')
+        expect(response.body).to have_tag(:label, text: 'Username *')
+        expect(response.body).to have_tag(:label, text: 'Email *')
+        expect(response.body).to have_tag(:a, href: '/login', text: 'Zurück')
+      end
     end
   end
 
   context 'POST /create' do
     context 'given registration is closed' do
-      it 'raises'
+      let(:response) { post '/create', new_account_data }
+
+      it 'raises 403 Error' do
+        ENV['REGISTRATION_OPEN'] = 'false' # only relevant to one test
+        expect(response.status).to eq 403
+        expect(response.body).to match 'Error 403'
+        ENV['REGISTRATION_OPEN'] = 'true'
+      end
     end
+
     context 'given passwords do not match' do
-      it 'redirects'
+      wrong_data = new_account_data
+      wrong_data[:password_confirmation] = 'foo'
+      let(:response) { post '/create', wrong_data }
+
+      it 'redirects to /new' do
+        expect(response).to redirect_to '/new'
+        expect(response.location).to match 'status=Error&message=Password is either empty or does not match'
+      end
     end
+
     context 'given username is already taken' do
       it 'redirects'
     end
