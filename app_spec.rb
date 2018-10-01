@@ -14,6 +14,13 @@ describe App do
     end
   end
 
+  shared_examples_for 'redirects to /login' do
+    it 'redirects to /login' do
+      expect(response.status).to eq 302
+      expect(response.location).to match '/login'
+    end
+  end
+
   context 'GET /' do
     context 'given user is logged in' do
       let(:response) { get '/', {}, 'rack.session' => session_data }
@@ -25,10 +32,7 @@ describe App do
 
     context 'given user is not logged in' do
       let(:response) { get "/" }
-      it 'redirects to /login' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/login'
-      end
+      include_examples 'redirects to /login'
     end
   end
 
@@ -72,10 +76,7 @@ describe App do
     end
     context 'given user is  not logged in' do
       let(:response) { get '/profile' }
-      it 'redirects to /login' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/login'
-      end
+      include_examples 'redirects to /login'
     end
   end
 
@@ -93,27 +94,20 @@ describe App do
 
     context 'given user is not logged in' do
       let(:response) { get '/profile' }
-      it 'redirects to /login' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/login'
-      end
+      include_examples 'redirects to /login'
     end
 
     context 'given access is forbidden' do
-      let(:response) { get '/profile/anotheruser', {}, 'rack.session' => session_data }
-      it 'raises 403 Error' do
-        expect(response.status).to eq 403
-        expect(response.body).to match 'Error 403'
-      end
+      let(:response) { get '/profile/anotheruser',
+                           {},
+                           'rack.session' => session_data }
+      include_examples 'raises 403'
     end
   end
 
   context 'GET /logout' do
     let(:response) { get '/logout', {}, 'rack.session' => session_data }
-    it 'redirects to /login' do
-      expect(response.status).to eq 302
-      expect(response.location).to match '/login'
-    end
+    include_examples 'redirects to /login'
   end
 
   context 'GET /profile/:username/password' do
@@ -131,10 +125,7 @@ describe App do
 
     context 'given user is not logged in' do
       let(:response) { get '/profile/fakeuser/password' }
-      it 'redirects to /login' do
-        expect(response.status).to eq 302
-        expect(response.location).to match '/login'
-      end
+      include_examples 'redirects to /login'
     end
 
     context 'given access is forbidden' do
