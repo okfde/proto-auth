@@ -1,9 +1,11 @@
+# coding: utf-8
 require "spec_helper"
 
 describe App do
   let(:app) { App.new }
 
-  session_data = { user_dn: '1234', uid: '1234' }
+  session_data = { user_dn: 'uid=fakeuser,ou=people,dc=fake,dc=xyz',
+                   uid: 'fakeuser' }
 
   context 'GET /' do
     context 'given user is logged in' do
@@ -37,7 +39,9 @@ describe App do
 
       it 'renders :login template' do
         expect(response.status).to eq 200
-        expect(response.body).to include 'Neuen Account anlegen'
+        expect(response.body).to have_tag(:label, text: 'Username')
+        expect(response.body).to have_tag(:label, text: 'Passwort')
+        expect(response.body).to have_tag(:input, value: 'Login')
       end
     end
   end
@@ -53,47 +57,114 @@ describe App do
 
   context 'GET /profile' do
     context 'given user is logged in' do
-      it 'redirects'
+      let(:response) { get '/profile', {}, 'rack.session' => session_data }
+      it 'redirects to /profile/:username' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/profile/fakeuser'
+      end
     end
     context 'given user is  not logged in' do
-      it 'redirects'
+      let(:response) { get '/profile' }
+      it 'redirects to /login' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/login'
+      end
     end
   end
 
   context 'GET /profile/:username' do
     context 'given user is logged in' do
-      it 'renders'
+      let(:response) { get '/profile/fakeuser', {}, 'rack.session' => session_data }
+      it 'redirects to /profile/:username' do
+        expect(response.status).to eq 200
+        expect(response.body).to have_tag(:a,
+                                          href: '/username/fakeuser/password',
+                                          text: 'Passwort ändern')
+        expect(response.body).to have_tag(:a, href: '/logout', text: 'Logout')
+      end
     end
+
     context 'given user is not logged in' do
-      it 'redirects'
+      let(:response) { get '/profile' }
+      it 'redirects to /login' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/login'
+      end
     end
+
     context 'given access is forbidden' do
-      it 'raises'
+      let(:response) { get '/profile/anotheruser', {}, 'rack.session' => session_data }
+      it 'raises 403 Error' do
+        expect(response.status).to eq 403
+        expect(response.body).to match 'Error 403'
+      end
     end
   end
 
   context 'GET /logout' do
-    it 'redirects'
+    let(:response) { get '/logout', {}, 'rack.session' => session_data }
+    it 'redirects to /login' do
+      expect(response.status).to eq 302
+      expect(response.location).to match '/login'
+    end
   end
 
   context 'GET /profile/:username/password' do
     context 'given user is logged in' do
-      it 'renders'
+      let(:response) { get '/profile/fakeuser/password',
+                           {},
+                           'rack.session' => session_data }
+      it 'renders :password template' do
+        expect(response.status).to eq 200
+        expect(response.body).to have_tag(:label, text: 'Neues Passwort *')
+        expect(response.body).to have_tag(:label, text: 'Neues Passwort bestätigen *')
+        expect(response.body).to have_tag(:input, value: 'Passwort ändern')
+      end
     end
+
     context 'given user is not logged in' do
-      it 'redirects'
+      let(:response) { get '/profile/fakeuser/password' }
+      it 'redirects to /login' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/login'
+      end
     end
+
     context 'given access is forbidden' do
-      it 'raises'
+      let(:response) { get '/profile/anotheruser/password',
+                           {},
+                           'rack.session' => session_data }
+      it 'raises 403 Error' do
+        expect(response.status).to eq 403
+        expect(response.body).to match 'Error 403'
+      end
     end
   end
 
   context 'POST /profile/:username/password' do
     context 'given an empty password' do
-      it 'redirects'
+      let(:response) { post '/profile/fakeuser/password',
+                            { password: 'currentpw',
+                              new_password: '',
+                              new_password_confirmation: '' },
+                            'rack.session' => session_data }
+      it 'redirects to password form' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/profile/fakeuser/password'
+        expect(response.location).to match 'Password and confirmation do not match'
+      end
     end
     context 'given not matching passwords' do
-      it 'redirects'
+      let(:response) { post '/profile/fakeuser/password',
+                            { password: 'currentpw',
+                              new_password: 'new',
+                              new_password_confirmation: 'new and shiny' },
+                            'rack.session' => session_data }
+      it 'redirects to password form' do
+        expect(response.status).to eq 302
+        expect(response.location).to match '/profile/fakeuser/password'
+        expect(response.location).to match 'Password and confirmation do not match'
+      end
     end
     context 'given wrong password' do
       it 'redirects'
