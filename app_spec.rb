@@ -7,6 +7,13 @@ describe App do
   session_data = { user_dn: 'uid=fakeuser,ou=people,dc=fake,dc=xyz',
                    uid: 'fakeuser' }
 
+  shared_examples_for 'raises 403' do
+    it 'raises 403 Error' do
+      expect(response.status).to eq 403
+      expect(response.body).to match 'Error 403'
+    end
+  end
+
   context 'GET /' do
     context 'given user is logged in' do
       let(:response) { get '/', {}, 'rack.session' => session_data }
@@ -134,10 +141,7 @@ describe App do
       let(:response) { get '/profile/anotheruser/password',
                            {},
                            'rack.session' => session_data }
-      it 'raises 403 Error' do
-        expect(response.status).to eq 403
-        expect(response.body).to match 'Error 403'
-      end
+      include_examples 'raises 403'
     end
   end
 
