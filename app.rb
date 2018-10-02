@@ -177,7 +177,7 @@ class App < Sinatra::Base
       sn: cn.split(' ').last,
       mail: email,
       userpassword: password,
-      ou: ENV['REGISTRATION_OU']
+      ou: 'Rocket.Chat User'
     }
 
     Net::LDAP.open(host: LDAP_HOST, port: LDAP_PORT, auth: auth) do |ldap|
