@@ -3,7 +3,6 @@ GEM
   specs:
     crass (1.0.4)
     daemons (1.2.6)
-    dotenv (2.5.0)
     eventmachine (1.2.7)
     mini_portile2 (2.3.0)
     mustermann (1.0.3)
@@ -38,7 +37,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  dotenv (~> 2.5.0)
   net-ldap (~> 0.16.1)
   sanitize (~> 4.6.6)
   sinatra (~> 2.0.3)

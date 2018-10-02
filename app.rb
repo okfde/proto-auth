@@ -6,9 +6,6 @@ require 'net-ldap'
 require 'sanitize'
 require 'sinatra'
 require 'sinatra/base'
-require 'dotenv'
-
-Dotenv.load
 
 class Forbidden < StandardError
   def http_status; 403 end
