@@ -1,0 +1,16 @@
+language: ruby
+
+cache:
+  - bundler
+
+rvm:
+  - 2.5.1
+
+notifications:
+  email: never
+
+install:
+  - bundle install
+
+script:
+  - ./script/test.sh
