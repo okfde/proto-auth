@@ -1,6 +1,9 @@
 require './app'
 require 'rack/test'
 require 'rspec-html-matchers'
+require 'coveralls'
+
+Coveralls.wear!
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
