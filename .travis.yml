@@ -13,4 +13,4 @@ install:
   - bundle install
 
 script:
-  - ./script/test.sh
+  - ./scripts/test.sh
