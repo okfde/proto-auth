@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/okfde/proto-auth.svg?branch=master)](https://travis-ci.org/okfde/proto-auth)
+[![Build Status](https://travis-ci.org/okfde/proto-auth.svg?branch=master)](https://travis-ci.org/okfde/proto-auth) [![Coverage Status](https://coveralls.io/repos/github/okfde/proto-auth/badge.svg?branch=master)](https://coveralls.io/github/okfde/proto-auth?branch=master)
 
 # ProtoAuth
 
