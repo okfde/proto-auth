@@ -1,4 +1,6 @@
-# Proto-Auth
+[![Build Status](https://travis-ci.org/okfde/proto-auth.svg?branch=master)](https://travis-ci.org/okfde/proto-auth)
+
+# ProtoAuth
 
 web based ldap-interface for Prototypefund
 
@@ -51,7 +53,7 @@ Alternatively, you can use the `-e VAR=VALUE` flag when running `$ docker run` (
 Run container in the background.
 
 ``` bash
-$ docker run -d -p 3000:3000 proto-auth:latest`
+$ docker run -d -p 3000:3000 proto-auth:latest
 ```
 
 That should be it!
