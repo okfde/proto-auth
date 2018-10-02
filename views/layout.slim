@@ -9,3 +9,10 @@ html
     .wrapper
       h1 ProtoAuth
       == yield
+
+    .footer
+      p
+        a href="https://chat.prototypefund.de/" title="Rocket Chat @ Prototypefund" Zum 🚀 Chat 🔗
+      - if session[:uid]
+        p
+          small Es kann etwas dauern bis ein neuer Account im Chat verfügbar ist.
