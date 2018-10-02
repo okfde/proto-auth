@@ -43,7 +43,8 @@ class App < Sinatra::Base
     def make_ldap(auth)
       Net::LDAP.new(host: LDAP_HOST,
                     port: LDAP_PORT,
-                    encryption: { method: :simple_tls },
+                    encryption: { method: :simple_tls,
+                                  tls_options: :default },
                     auth: auth)
     end
 
@@ -167,8 +168,7 @@ class App < Sinatra::Base
 
     redirect to "/new?status=Error&message=Password is either empty or does not match" if password_not_ok
 
-    dn = ADMIN_DN
-    auth = make_auth(dn, ENV['ADMIN_PW'])
+    auth = make_auth("#{ADMIN_DN}", "#{ENV['ADMIN_PW']}")
 
     udn = user_dn(username)
     attr = {
@@ -181,7 +181,10 @@ class App < Sinatra::Base
       ou: 'Rocket.Chat User'
     }
 
-    Net::LDAP.open(host: LDAP_HOST, port: LDAP_PORT, auth: auth) do |ldap|
+    Net::LDAP.open(host: LDAP_HOST,
+                   port: LDAP_PORT,
+                   encryption: true,
+                   auth: auth) do |ldap|
       ldap.add(:dn => udn, :attributes => attr)
 
       if ldap.get_operation_result.message == 'Success'
