@@ -167,7 +167,7 @@ class App < Sinatra::Base
 
     redirect to "/new?status=Error&message=Password is either empty or does not match" if password_not_ok
 
-    auth = make_auth("#{ADMIN_DN}", "#{ADMIN_PW}".gsub('"', ''))
+    auth = make_auth("#{ADMIN_DN}", ADMIN_PW.gsub('"', ''))
 
     udn = user_dn(username)
     attr = {
