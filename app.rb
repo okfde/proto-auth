@@ -15,6 +15,7 @@ class App < Sinatra::Base
   LDAP_HOST = ENV['LDAP_HOST']
   LDAP_PORT = ENV['LDAP_PORT']
   ADMIN_DN = ENV['ADMIN_DN']
+  ADMIN_PW = ENV['ADMIN_PW']
   PEOPLE_DN = ENV['PEOPLE_DN']
   PEOPLE_FILTER = Net::LDAP::Filter.eq('objectClass', 'inetOrgPerson')
 
@@ -166,7 +167,7 @@ class App < Sinatra::Base
 
     redirect to "/new?status=Error&message=Password is either empty or does not match" if password_not_ok
 
-    auth = make_auth("#{ADMIN_DN}", "#{ENV['ADMIN_PW']}")
+    auth = make_auth("#{ADMIN_DN}", "#{ADMIN_PW}".gsub('"', ''))
 
     udn = user_dn(username)
     attr = {
