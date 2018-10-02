@@ -178,6 +178,7 @@ class App < Sinatra::Base
       mail: email,
       userpassword: password,
       ou: ENV['REGISTRATION_OU']
+    }
 
     Net::LDAP.open(host: LDAP_HOST,
                    port: LDAP_PORT,
