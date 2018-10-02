@@ -1,4 +1,4 @@
-require 'app'
+require './app'
 require 'rack/test'
 require 'rspec-html-matchers'
 
