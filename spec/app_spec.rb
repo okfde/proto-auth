@@ -4,12 +4,16 @@ require "spec_helper"
 describe App do
   let(:app) { App.new }
 
-  session_data = { user_dn: 'uid=fakeuser,ou=people,dc=fake,dc=xyz',
+  ldap_base = 'dc=fake,dc=xyz'
+  ldap_user_dn = "uid=fakeuser,ou=people,#{ldap_base}"
+  ldap_user_pw = 'apassword'
+
+  session_data = { user_dn: ldap_user_dn,
                    uid: 'fakeuser' }
   new_account_data = { full_name: 'fakey mcfake',
                        user_name: 'fakeuser',
-                       password: 'apassword',
-                       password_confirmation: 'apassword',
+                       password: ldap_user_pw,
+                       password_confirmation: ldap_user_pw,
                        email: 'email@example.com' }
 
   shared_examples_for 'raises 403' do
