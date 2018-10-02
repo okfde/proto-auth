@@ -43,8 +43,6 @@ class App < Sinatra::Base
     def make_ldap(auth)
       Net::LDAP.new(host: LDAP_HOST,
                     port: LDAP_PORT,
-                    encryption: { method: :simple_tls,
-                                  tls_options: :default },
                     auth: auth)
     end
 
@@ -183,7 +181,6 @@ class App < Sinatra::Base
 
     Net::LDAP.open(host: LDAP_HOST,
                    port: LDAP_PORT,
-                   encryption: true,
                    auth: auth) do |ldap|
       ldap.add(:dn => udn, :attributes => attr)
 
