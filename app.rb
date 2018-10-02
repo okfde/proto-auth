@@ -167,7 +167,7 @@ class App < Sinatra::Base
 
     redirect to "/new?status=Error&message=Password is either empty or does not match" if password_not_ok
 
-    auth = make_auth("#{ADMIN_DN}", ADMIN_PW.gsub('"', ''))
+    auth = make_auth(ADMIN_DN, ADMIN_PW
 
     udn = user_dn(username)
     attr = {
@@ -177,8 +177,7 @@ class App < Sinatra::Base
       sn: cn.split(' ').last,
       mail: email,
       userpassword: password,
-      ou: 'Rocket.Chat User'
-    }
+      ou: ENV['REGISTRATION_OU']
 
     Net::LDAP.open(host: LDAP_HOST,
                    port: LDAP_PORT,

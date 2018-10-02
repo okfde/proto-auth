@@ -3,11 +3,6 @@
     span.status="#{params[:status]}! "
     span= params[:message] if params[:message]
 
-p env vars
-p= ENV['LDAP_HOST']
-p= ENV['ADMIN_DN']
-p= ENV['ADMIN_PW']
-
 .body
   form action="login" method='POST'
     p.form-group
