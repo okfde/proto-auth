@@ -76,8 +76,8 @@ class App < Sinatra::Base
     raise Forbidden, 'Unauthorized' unless owner?(params[:username])
 
     current_password = Sanitize.fragment(params[:current_password])
-    new_password = Sanitize.fragment(params[:new_password])
-    new_password_confirmation = Sanitize.fragment(params[:new_password_confirmation])
+    new_password = params[:new_password]
+    new_password_confirmation = params[:new_password_confirmation]
 
     password_not_ok = new_password.empty? || (new_password != new_password_confirmation)
     if password_not_ok
@@ -107,8 +107,8 @@ class App < Sinatra::Base
 
     cn = Sanitize.fragment(params[:full_name])
     username = Sanitize.fragment(params[:username])
-    password = Sanitize.fragment(params[:password])
-    password_confirmation = Sanitize.fragment(params[:password_confirmation])
+    password = params[:password]
+    password_confirmation = params[:password_confirmation]
     email = Sanitize.fragment(params[:email])
 
     password_not_ok = password.empty? || (password != password_confirmation)
