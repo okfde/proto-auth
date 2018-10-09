@@ -152,7 +152,7 @@ describe App do
   end
 
   context 'POST /profile/:username/password' do
-    context 'given an empty password' do
+    pending 'given an empty password' do
       let(:response) { post '/profile/fakeuser/password',
                             { password: 'currentpw',
                               new_password: '',
@@ -163,7 +163,7 @@ describe App do
         expect(response.location).to match 'Password and confirmation do not match'
       end
     end
-    context 'given not matching passwords' do
+    pending 'given not matching passwords' do
       let(:response) { post '/profile/fakeuser/password',
                             { password: 'currentpw',
                               new_password: 'new',

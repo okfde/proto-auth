@@ -5,7 +5,7 @@ module ApplicationHelper
 
   def authenticate_with_ldap(username, password)
     username = Sanitize.fragment(username)
-    password = Sanitize.fragment(password)
+    password = password.strip
 
     dn = make_dn(username)
     auth = make_auth(dn, password)
@@ -19,14 +19,14 @@ module ApplicationHelper
   end
 
   def make_ldap(auth)
-    Net::LDAP.new(host: LDAP_HOST,
-                  port: LDAP_PORT,
+    Net::LDAP.new(host: ENV['LDAP_HOST'],
+                  port: ENV['LDAP_PORT'],
                   auth: auth)
   end
 
   def make_dn(username)
     if username == 'admin'
-      ADMIN_DN
+      ENV['ADMIN_DN']
     else
       user_dn(username)
     end
@@ -47,7 +47,7 @@ module ApplicationHelper
   end
 
   def user_dn(uid)
-    "uid=#{uid}," + PEOPLE_DN
+    "uid=#{uid}," + ENV['PEOPLE_DN']
   end
 
   def can_register?
