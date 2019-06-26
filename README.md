@@ -57,3 +57,10 @@ $ docker run -d -p 3000:3000 proto-auth:latest
 ```
 
 That should be it!
+
+
+## Credit
+
+Travis ldap setup by
+- https://cweiske.de/tagebuch/ldap-server-travis.htm
+- https://github.com/pear/Net_LDAP2/blob/master/.travis.yml

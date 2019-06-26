@@ -28,4 +28,5 @@ before_script:
   - cp ci/env.sample.travis .env
 
 script:
+  - ruby scripts/ci-test-ldap.rb
   - ./scripts/test.sh
