@@ -1,10 +1,13 @@
 # coding: utf-8
 require 'net/ldap'
 
-ldap = Net::LDAP.new
-ldap.host = ENV['LDAP_HOST']
-ldap.port = ENV['LDAP_PORT']
-ldap.auth ENV['ADMIN_DN'], ENV['ADMIN_PW']
+auth = { method: :simple,
+         username: 'uid=john,ou=People,dc=example,dc=com',
+         password: 'johnldap' }
+
+ldap = Net::LDAP.new(host: ENV['LDAP_HOST'],
+              port: ENV['LDAP_PORT'],
+              auth: auth)
 
 if ldap.bind
   puts "\nCould bind to LDAP\n🎉🎉🎉\n"
