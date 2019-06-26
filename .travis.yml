@@ -9,8 +9,23 @@ rvm:
 notifications:
   email: never
 
+addons:
+  apt:
+    packages:
+    - ldap-utils
+    - slapd
+
 install:
   - bundle install
+
+before_script:
+  - cat ci/ldapconfig.ini.dist | sed s/389/3389/ > ci/ldapconfig.ini
+  - mkdir /tmp/slapd
+  - slapd -f ci/slapd.conf -h ldap://localhost:3389 &
+  - sleep 3
+  - ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f ci/base.ldif
+  - ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f ci/add_content.ldif
+  - cp ci/env.sample.travis .env
 
 script:
   - ./scripts/test.sh
