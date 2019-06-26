@@ -47,7 +47,7 @@ module ApplicationHelper
   end
 
   def user_dn(uid)
-    "uid=#{uid}," + ENV['PEOPLE_DN']
+    "uid=#{uid},#{ENV['PEOPLE_DN']}"
   end
 
   def can_register?
