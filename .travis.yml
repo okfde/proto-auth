@@ -25,7 +25,7 @@ before_script:
   - sleep 3
   - ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f ci/base.ldif
   - ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f ci/add_content.ldif
-  - cp ci/env.sample.travis .env
+  - cp ci/env.sample.travis .env && source .env
 
 script:
   - ruby scripts/ci-test-ldap.rb
