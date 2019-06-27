@@ -8,15 +8,14 @@ end
 describe 'ApplicationHelpers' do
   let(:helpers) { TestHelper.new }
 
-  pending '#authorize!'
-
   describe '#authenticate_with_ldap' do
     it "authenticates when credentials are correct" do
       username = "john"
       password = "johnldap"
-      expect(helpers.authenticate_with_ldap(username, passwowrd)).to eq({dn: "",
-                                                                         pw: "",
-                                                                         uid: ""})
+      expect(helpers.authenticate_with_ldap(username, password))
+        .to eq({dn: "uid=john,ou=People,dc=example,dc=com",
+                pw: "johnldap",
+                uid: "john"})
     end
   end
 

@@ -88,6 +88,10 @@ class App < Sinatra::Base
     dn = session[:user_dn]
     auth = make_auth(dn, current_password)
     ldap = make_ldap(auth)
+    unless ldap.bind
+      status = "status=Error&message=Password is wrong"
+      redirect to "/profile/#{session[:uid]}/password?#{status}"
+    end
     ldap.password_modify(dn: dn,
                          auth: auth,
                          old_password: current_password,

@@ -4,5 +4,4 @@
 dn: dc=example,dc=com
 objectClass: dcObject
 objectClass: organizationalUnit
-#dc: test
-ou: Test
+#dc: example

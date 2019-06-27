@@ -42,13 +42,13 @@ hr {
 
 .wrapper {
   padding: 0.5rem 1rem 2rem;
-  margin: 1rem 3rem;
+  margin: 1rem auto;
   max-width: 360px;
   box-shadow: 0 0 1px 1px var(--color-grey);
 }
 .footer {
   max-width: 360px;
-  margin: 0 3rem;
+  margin: 0 auto;
   padding: 0.5rem 2rem;
   text-align: right;
 }
