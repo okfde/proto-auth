@@ -10,7 +10,15 @@ describe 'ApplicationHelpers' do
 
   pending '#authorize!'
   pending '#authenticate_with_ldap'
-  pending '#make_ldap'
+
+  describe '#make_ldap' do
+    it "returns valid LDAP object" do
+      auth = { method: :simple,
+               username: 'dn=admin,dc=nodomain,dc=de',
+               password: 'passwort' }
+      expect(helpers.make_ldap(auth).is_a?(Net::LDAP)).to be true
+    end
+  end
 
   describe '#make_dn' do
     it 'returns admin dn if username is admin' do
