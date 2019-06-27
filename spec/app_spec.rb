@@ -160,7 +160,6 @@ describe App do
                             'rack.session' => session_data }
       it 'redirects to password form' do
         expect(response).to redirect_to '/profile/john/password'
-        #expect(response.body).to_not have_tag(:h2, text: 'Ahoy, john!')
         expect(response.location).to match 'Password and confirmation do not match'
       end
     end
@@ -171,11 +170,7 @@ describe App do
                               new_password_confirmation: 'butwrong' },
                             'rack.session' => session_data }
       it 'redirects to password form' do
-        #puts(response.location)\
-        #expect(response.body).to_not have_tag(:h2, text: 'Ahoy, john!')
-        #puts response
         expect(response).to redirect_to '/profile/john/password'
-        #expect(response.status).to eq 303
         expect(response.location).to match 'Password and confirmation do not match'
       end
     end
