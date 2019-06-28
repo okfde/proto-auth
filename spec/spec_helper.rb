@@ -1,10 +1,11 @@
-require './app'
 require 'rspec'
 require 'rack/test'
 require 'rspec-html-matchers'
 require 'coveralls'
 
 Coveralls.wear!
+
+require './app'
 
 ENV['RACK_ENV'] = 'test'
 
