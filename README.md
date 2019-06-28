@@ -23,7 +23,7 @@ Now your variables are in the environment and the app can read them.
 
 ### Running
 
-Expects Ruby > 2.5.1 and `bundler` (`$ gem install bundler`) installed
+Expects Ruby > 2.6.3 and `bundler` (`$ gem install bundler`) installed
 
 Run `$ bundle install` to install dependencies.
 
