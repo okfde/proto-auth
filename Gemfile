@@ -5,7 +5,7 @@ ruby '2.6.3'
 
 gem 'coveralls', require: false
 gem 'net-ldap', '~> 0.16.1'
-gem 'sanitize', '~> 4.6.6'
+gem 'sanitize', '~> 5.2.1'
 gem 'sinatra', '~> 2.0.3'
 gem 'slim', '~> 4.0.1'
 gem 'thin', '~> 1.7.2'
