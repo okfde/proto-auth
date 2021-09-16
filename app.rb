@@ -101,6 +101,30 @@ class App < Sinatra::Base
     redirect to "/profile/#{session[:uid]}?#{status}"
   end
 
+  get '/forgot_password' do
+    slim :forgot_password
+  end
+
+  post '/forgot_password' do
+    email = Sanitize.fragment(params[:useremail])
+    status = "status=Success&message=Wenn dieser Username existiert, bekommst du eine Email"
+    users = search_user_by_email(email)
+    redirect to "/forgot_password?#{status}" unless users.length >= 1
+
+    # now we know we have at least one user
+    # time to send them emails
+
+    users.each do |entry|
+      entry.each do |attribute, values|
+        if attribute.to_s == 'mail'
+          values.each { |mail| puts "Sending mail to #{mail}" }
+        end
+      end
+    end
+
+    redirect to "/forgot_password?#{status}"
+  end
+
   get '/new' do
     @ropen = can_register?
     slim :new

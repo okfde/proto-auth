@@ -40,6 +40,15 @@ hr {
   border-bottom: none;
 }
 
+.mt-2 {
+  margin-top: 2rem;
+}
+
+.small {
+  font-size: 0.9rem;
+}
+
+
 .wrapper {
   padding: 0.5rem 1rem 2rem;
   margin: 1rem auto;
