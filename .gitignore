@@ -1,2 +1,5 @@
 .env
 coverage
+
+ci/ldapconfig.ini
+tmp

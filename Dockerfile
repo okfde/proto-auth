@@ -1,4 +1,4 @@
-FROM ruby:2.6.3-slim-stretch
+FROM ruby:3.0.2-slim-stretch
 
 RUN apt-get update -qq && apt-get install -y build-essential vim ldap-utils
 
