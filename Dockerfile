@@ -1,6 +1,6 @@
 FROM ruby:3.0.2-slim-stretch
 
-RUN apt-get update -qq && apt-get install -y build-essential vim ldap-utils
+RUN apt-get update -qq && apt-get install -y build-essential vim ldap-utils ruby-sqlite3
 
 ENV APP_ROOT /var/www/proto-auth
 RUN mkdir -p $APP_ROOT

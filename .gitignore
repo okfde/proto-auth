@@ -3,3 +3,5 @@ coverage
 
 ci/ldapconfig.ini
 tmp
+
+pw_reset_tokens.db
