@@ -1,3 +1,4 @@
+# coding: utf-8
 # Thanks to
 # https://gist.github.com/tritonrc/783358
 # for basic approach
@@ -6,6 +7,7 @@ require 'net-ldap'
 require 'sanitize'
 require 'sinatra'
 require 'sinatra/base'
+require 'pony'
 
 require './helpers/application_helper'
 
@@ -117,7 +119,25 @@ class App < Sinatra::Base
     users.each do |entry|
       entry.each do |attribute, values|
         if attribute.to_s == 'mail'
-          values.each { |mail| puts "Sending mail to #{mail}" }
+          values.each do |mail|
+            Pony.mail({
+                        :to => mail,
+                        :body => "Hallo #{entry[:uid][0]}",
+                        :subject => 'Passwort zurücksetzen',
+                        :via => :smtp,
+                        :via_options => {
+                          :address              => ENV['SMTP_ADDRESS'],
+                          :port                 => ENV['SMTP_PORT'],
+                          :enable_starttls_auto => true,
+                          :user_name            => ENV['SMTP_USER'],
+                          :password             => ENV['SMTP_PW'],
+                          :authentication       => :login, # :plain, :login, :cram_md5, no auth by default
+                          :domain               => ENV['SMTP_DOMAIN']
+                        }
+                      })
+
+            puts "Sending mail to #{mail}"
+          end
         end
       end
     end
