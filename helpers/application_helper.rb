@@ -37,6 +37,19 @@ module ApplicationHelper
     end
   end
 
+  def search_user_by_uid(uid)
+    # we just need an admin ldap to verify, this could be in another method
+    auth = make_auth(ADMIN_DN, ADMIN_PW)
+    ldap = make_ldap(auth)
+
+    Net::LDAP.open(host: LDAP_HOST,
+                   port: LDAP_PORT,
+                   auth: auth) do |ldap|
+      filter = Net::LDAP::Filter.eq( "uid", uid )
+      return ldap.search(:base => PEOPLE_DN, :filter => filter)
+    end
+  end
+
   def make_ldap(auth)
     Net::LDAP.new(host: ENV['LDAP_HOST'],
                   port: ENV['LDAP_PORT'],
