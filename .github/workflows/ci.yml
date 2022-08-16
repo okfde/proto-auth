@@ -22,7 +22,7 @@ jobs:
         working-directory: backend
     strategy:
       matrix:
-        ruby-version: ['3.0.2']
+        ruby-version: ['3.0.4']
     steps:
     - uses: actions/checkout@v2
     - name: Install LDAP stuff

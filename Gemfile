@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.2'
+ruby '3.0.4'
 
 gem 'coveralls', require: false
 gem 'net-ldap', '~> 0.17.0'
