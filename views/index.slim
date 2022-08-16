@@ -8,5 +8,11 @@
   p
     a href="/profile/#{session[:uid]}/password" Passwort ändern
 
+  form action="/delete_account" method="POST" class="js-confirm"
+    input type="hidden" name="username" value=session[:uid]
+    input type="submit" value="Account löschen" class="link"
+
   p
     a.btn href="/logout" Logout
+
+  script src="/script.js"
