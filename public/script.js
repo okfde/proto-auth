@@ -1,9 +1,9 @@
 document.querySelector('.js-confirm').addEventListener('submit', (ev) => {
   let username =  document.querySelector('.js-confirm input[type=hidden]').getAttribute('value');
   let prompt = `⚠️ Achtung ⚠️\n
-Diese Action wird deinen Account sofort vollständig löschen.\n
+Diese Aktion wird deinen Account sofort und vollständig löschen.\n
 Das kann nicht rückgängig gemacht werden.\n
-Bestätige die Löschung mit deinem Username ${username} `;
+Bestätige die Löschung mit deinem Username "${username}" `;
   let answer = window.prompt(prompt);
 
   if (answer === username) {
