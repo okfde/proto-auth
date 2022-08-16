@@ -1,3 +1,4 @@
+# coding: utf-8
 # Thanks to
 # https://gist.github.com/tritonrc/783358
 # for basic approach
@@ -6,6 +7,9 @@ require 'net-ldap'
 require 'sanitize'
 require 'sinatra'
 require 'sinatra/base'
+require 'pony'
+require 'securerandom'
+require "sqlite3"
 
 require './helpers/application_helper'
 
@@ -25,6 +29,10 @@ class App < Sinatra::Base
   PEOPLE_FILTER = Net::LDAP::Filter.eq('objectClass', 'inetOrgPerson')
 
   enable :sessions
+
+  db = SQLite3::Database.open 'pw_reset_tokens.db'
+  db.execute "CREATE TABLE IF NOT EXISTS tokens(uid TEXT, token TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)"
+  db.results_as_hash = true
 
   get '/' do
     authorize!
@@ -99,6 +107,101 @@ class App < Sinatra::Base
 
     status = "status=#{ldap.get_operation_result.message}&message=Password updated"
     redirect to "/profile/#{session[:uid]}?#{status}"
+  end
+
+  get '/forgot_password' do
+    slim :forgot_password
+  end
+
+  post '/forgot_password' do
+    email = Sanitize.fragment(params[:useremail])
+    status = "status=Success&message=Wenn dieser Username existiert, bekommst du eine Email"
+    users = search_user_by_email(email)
+    redirect to "/forgot_password?#{status}" unless users.length >= 1
+
+    Thread.new do
+      users.each do |entry|
+        entry.each do |attribute, values|
+          if attribute.to_s == 'mail'
+            values.each do |mail|
+              token = SecureRandom.alphanumeric(24)
+              uid = entry[:uid][0]
+              db.execute "INSERT INTO tokens (uid, token) VALUES (?, ?)", uid, token
+
+              Pony.mail({
+                          :to => mail,
+                          :body => "Hallo #{uid}, setze hier dein Passwort zurück: #{ENV['BASE_URL']}/reset_password/#{token} Der link ist #{ENV['PW_RESET_TOKEN_EXPIRATION'].to_i * 24} Stunden gültig. Wenn du den Link nicht angefordert hast, ignoriere diese Email.",
+                          :subject => 'Passwort zurücksetzen',
+                          :via => :smtp,
+                          :via_options => {
+                            :address              => ENV['SMTP_ADDRESS'],
+                            :port                 => ENV['SMTP_PORT'],
+                            :enable_starttls_auto => true,
+                            :user_name            => ENV['SMTP_USER'],
+                            :password             => ENV['SMTP_PW'],
+                            :authentication       => :login, # :plain, :login, :cram_md5, no auth by default
+                            :domain               => ENV['SMTP_DOMAIN']
+                          }
+                        })
+
+              puts "#{Time.now} Sending mail to #{mail}"
+            end
+          end
+        end
+      end
+    end
+
+    redirect to "/forgot_password?#{status}"
+  end
+
+  get '/reset_password/:token' do
+    token = Sanitize.fragment(params[:token])
+    results = db.query "SELECT uid, created_at FROM tokens WHERE token=?", token
+
+    first_result = results.next
+    if first_result
+      session[:reset_token] = token
+      session[:uid] = first_result[0]
+      session[:timestamp] = first_result[1]
+
+      expiration_timeframe = 60 * 60 * 24 * ENV['PW_RESET_TOKEN_EXPIRATION'].to_i
+      creation_timestamp = Time.parse(session[:timestamp])
+
+      if creation_timestamp + expiration_timeframe <= Time.now
+        slim :reset_password
+      else
+        db.execute "DELETE FROM tokens WHERE token=?", token
+        slim :error_reset_password
+      end
+    else
+      slim :error_reset_password
+    end
+  end
+
+
+  post '/reset_password' do
+    new_pw = params[:new_password]
+    new_pw_confirm = params[:new_password_confirmation]
+    password_not_ok = new_pw.empty? || (new_pw != new_pw_confirm)
+
+    if password_not_ok
+      status = "status=Error&message=Password and confirmation do not match"
+      redirect to "/reset_password/#{session[:reset_token]}?#{status}"
+    else
+      auth = make_auth(ADMIN_DN, ADMIN_PW)
+      ldap = make_ldap(auth)
+      dn = user_dn(session[:uid])
+
+      ldap.password_modify(dn: dn,
+                           auth: auth,
+                           new_password: new_pw)
+
+      db.execute "DELETE FROM tokens WHERE token=?", session[:reset_token]
+      session.clear
+
+      status = "status=Success&message=Password reset"
+      redirect to "/login?#{status}"
+    end
   end
 
   get '/new' do

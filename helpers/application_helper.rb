@@ -1,4 +1,10 @@
 module ApplicationHelper
+  LDAP_HOST = ENV['LDAP_HOST']
+  LDAP_PORT = ENV['LDAP_PORT']
+  ADMIN_DN = ENV['ADMIN_DN']
+  ADMIN_PW = ENV['ADMIN_PW']
+  PEOPLE_DN = ENV['PEOPLE_DN']
+
   def authorize!
     redirect to('/login') unless session[:user_dn]
   end
@@ -15,6 +21,19 @@ module ApplicationHelper
       {dn: dn, pw: password, uid: username}
     else
       false
+    end
+  end
+
+  def search_user_by_email(useremail)
+    # we just need an admin ldap to verify, this could be in another method
+    auth = make_auth(ADMIN_DN, ADMIN_PW)
+    ldap = make_ldap(auth)
+
+    Net::LDAP.open(host: LDAP_HOST,
+                   port: LDAP_PORT,
+                   auth: auth) do |ldap|
+      filter = Net::LDAP::Filter.eq( "mail", useremail )
+      return ldap.search(:base => PEOPLE_DN, :filter => filter)
     end
   end
 

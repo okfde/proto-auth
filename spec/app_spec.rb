@@ -262,4 +262,66 @@ describe App do
       it 'redirects'
     end
   end
+
+
+  context 'GET /forgot_password' do
+    let(:response) { get '/forgot_password' }
+
+    it 'renders the :forgot_password template' do
+      expect(response.status).to eq 200
+      expect(response.body).to have_tag(:h2,
+                                        text: 'Password zurücksetzen')
+      expect(response.body).to have_tag(:input, value: 'Passwort zurücksetzen')
+    end
+  end
+
+  context 'POST /forgot_password' do
+    context 'Email exists' do
+      right_data = {}
+      right_data[:email] = 'te@example.org'
+      let(:response) { post '/forgot_paddword', right_data }
+
+      it 're-renders the form with success message' do
+      end
+    end
+
+    context 'Email does not exist' do
+      wrong_data = {}
+      wrong_data[:email] = 'foobi@doobi.wrong'
+      let(:response) { post '/forgot_paddword', wrong_data }
+
+      it 're-renders the form with success message' do
+      end
+    end
+  end
+
+  context 'GET /reset_password' do
+    context 'with a correct token' do
+      it 'renders :reset_password view'
+    end
+
+    context 'with expired token' do
+      it 'renders :error_reset_password view'
+      it 'destroys the token'
+    end
+
+    context 'with plain wrong token' do
+      it 'renders :error_reset_password view'
+    end
+  end
+
+  context 'POST /reset_password' do
+    context 'passwords match' do
+      it 'sets new password' do
+      end
+      it 'destroys the token' do
+
+      end
+    end
+    context 'passwords do not match' do
+      it 're-renders form with message' do
+
+      end
+    end
+  end
 end

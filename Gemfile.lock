@@ -13,6 +13,9 @@ GEM
     docile (1.4.0)
     eventmachine (1.2.7)
     json (2.5.1)
+    mail (2.7.1)
+      mini_mime (>= 0.1.1)
+    mini_mime (1.1.1)
     mini_portile2 (2.6.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
@@ -20,6 +23,8 @@ GEM
     nokogiri (1.12.4)
       mini_portile2 (~> 2.6.1)
       racc (~> 1.4)
+    pony (1.13.1)
+      mail (>= 2.0)
     racc (1.5.2)
     rack (2.2.3)
     rack-protection (2.1.0)
@@ -59,6 +64,7 @@ GEM
     slim (4.1.0)
       temple (>= 0.7.6, < 0.9)
       tilt (>= 2.0.6, < 2.1)
+    sqlite3 (1.4.2)
     sync (0.5.0)
     temple (0.8.2)
     term-ansicolor (1.7.1)
@@ -78,12 +84,14 @@ PLATFORMS
 DEPENDENCIES
   coveralls
   net-ldap (~> 0.17.0)
+  pony (~> 1.13.1)
   rack-test (~> 1.1.0)
   rspec (~> 3.10.0)
   rspec-html-matchers (~> 0.9.1)
   sanitize (~> 6.0.0)
   sinatra (~> 2.1.0)
   slim (~> 4.1.0)
+  sqlite3 (~> 1.4.2)
   thin (~> 1.8.1)
 
 RUBY VERSION

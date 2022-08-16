@@ -1,5 +1,5 @@
 - if params[:status]
-  p.flash.error
+  p class="flash #{params[:status].downcase}"
     span.status="#{params[:status]}! "
     span= params[:message] if params[:message]
 
@@ -13,6 +13,9 @@
       input type='password' name='password' required='true'
 
     input.btn type='submit' value='Login'
+
+  div.mt-2.small
+    a href='/forgot_password' Passwort vergessen?
 
   - if @ropen
     hr
