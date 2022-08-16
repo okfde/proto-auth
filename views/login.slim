@@ -1,5 +1,5 @@
 - if params[:status]
-  p.flash.error
+  p class="flash #{params[:status].downcase}"
     span.status="#{params[:status]}! "
     span= params[:message] if params[:message]
 

@@ -119,31 +119,33 @@ class App < Sinatra::Base
     users = search_user_by_email(email)
     redirect to "/forgot_password?#{status}" unless users.length >= 1
 
-    users.each do |entry|
-      entry.each do |attribute, values|
-        if attribute.to_s == 'mail'
-          values.each do |mail|
-            token = SecureRandom.alphanumeric(24)
-            uid = entry[:uid][0]
-            db.execute "INSERT INTO tokens (uid, token) VALUES (?, ?)", uid, token
+    Thread.new do
+      users.each do |entry|
+        entry.each do |attribute, values|
+          if attribute.to_s == 'mail'
+            values.each do |mail|
+              token = SecureRandom.alphanumeric(24)
+              uid = entry[:uid][0]
+              db.execute "INSERT INTO tokens (uid, token) VALUES (?, ?)", uid, token
 
-            Pony.mail({
-                        :to => mail,
-                        :body => "Hallo #{uid}, your token is /reset_password/#{token}",
-                        :subject => 'Passwort zurücksetzen',
-                        :via => :smtp,
-                        :via_options => {
-                          :address              => ENV['SMTP_ADDRESS'],
-                          :port                 => ENV['SMTP_PORT'],
-                          :enable_starttls_auto => true,
-                          :user_name            => ENV['SMTP_USER'],
-                          :password             => ENV['SMTP_PW'],
-                          :authentication       => :login, # :plain, :login, :cram_md5, no auth by default
-                          :domain               => ENV['SMTP_DOMAIN']
-                        }
-                      })
+              Pony.mail({
+                          :to => mail,
+                          :body => "Hallo #{uid}, setze hier dein Passwort zurück: #{ENV['BASE_URL']}/reset_password/#{token} Der link ist #{ENV['PW_RESET_TOKEN_EXPIRATION'].to_i * 24} Stunden gültig. Wenn du den Link nicht angefordert hast, ignoriere diese Email.",
+                          :subject => 'Passwort zurücksetzen',
+                          :via => :smtp,
+                          :via_options => {
+                            :address              => ENV['SMTP_ADDRESS'],
+                            :port                 => ENV['SMTP_PORT'],
+                            :enable_starttls_auto => true,
+                            :user_name            => ENV['SMTP_USER'],
+                            :password             => ENV['SMTP_PW'],
+                            :authentication       => :login, # :plain, :login, :cram_md5, no auth by default
+                            :domain               => ENV['SMTP_DOMAIN']
+                          }
+                        })
 
-            puts "Sending mail to #{mail}"
+              puts "#{Time.now} Sending mail to #{mail}"
+            end
           end
         end
       end
@@ -159,13 +161,23 @@ class App < Sinatra::Base
     first_result = results.next
     if first_result
       session[:reset_token] = token
-      session[:uid] = first_result[:uid]
-      session[:timestamp] = first_result[:created_at]
-      slim :reset_password
+      session[:uid] = first_result[0]
+      session[:timestamp] = first_result[1]
+
+      expiration_timeframe = 60 * 60 * 24 * ENV['PW_RESET_TOKEN_EXPIRATION'].to_i
+      creation_timestamp = Time.parse(session[:timestamp])
+
+      if creation_timestamp + expiration_timeframe <= Time.now
+        slim :reset_password
+      else
+        db.execute "DELETE FROM tokens WHERE token=?", token
+        slim :error_reset_password
+      end
     else
       slim :error_reset_password
     end
   end
+
 
   post '/reset_password' do
     new_pw = params[:new_password]
@@ -180,18 +192,15 @@ class App < Sinatra::Base
       ldap = make_ldap(auth)
       dn = user_dn(session[:uid])
 
-      puts dn
-
       ldap.password_modify(dn: dn,
                            auth: auth,
                            new_password: new_pw)
 
-      puts ldap.get_operation_result.message
-
-      # delete token
+      db.execute "DELETE FROM tokens WHERE token=?", session[:reset_token]
+      session.clear
 
       status = "status=Success&message=Password reset"
-      redirect to "/reset_password/#{session[:reset_token]}?#{status}"
+      redirect to "/login?#{status}"
     end
   end
 
