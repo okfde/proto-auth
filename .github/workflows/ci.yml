@@ -1,0 +1,48 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test_backend:
+    runs-on: ubuntu-latest
+    env:
+      LDAB_HOST: "localhost"
+      LDAP_PORT: 3389
+      ADMIN_DN: "cn=admin,dc=example,dc=com"
+      PEOPLE_DN: "ou=People,dc=example,dc=com"
+      ADMIN_PW: "secretadminpassword"
+      REGISTRATION_OPEN: true
+      REGISTRATION_OU: ""
+    defaults:
+      run:
+        working-directory: backend
+    strategy:
+      matrix:
+        ruby-version: ['3.0.2']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install LDAP stuff
+      run: sudo apt-get -yqq install ldap-utils slapd
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+        working-directory: backend
+    - name: LDAP conf stuff
+      run: |
+        cat ci/ldapconfig.ini.dist | sed s/389/3389/ > ci/ldapconfig.ini
+        mkdir /tmp/slapd
+        slapd -f ci/slapd.conf -h ldap://localhost:3389 &
+        sleep 3
+        ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f ci/base.ldif
+        ldapadd -h localhost:3389 -D cn=admin,dc=example,dc=com -w test -f ci/add_content.ldif
+        cp ci/env.sample.travis .env && source .env
+    - name: Test LDAP
+      run: ruby scripts/ci-test-ldap.rb
+    - name: Test test
+      run: ./scripts/test.sh
