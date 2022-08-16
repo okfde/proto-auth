@@ -5,14 +5,25 @@
 
 .body
   h2= "Ahoy, #{ session[:uid]}!"
-  p
+
+  div
+    img src="data:image/png;base64,#{@user[0][:jpegphoto][0]}" class="avatar"
+
+  form action="/upload_avatar" method="POST" enctype="multipart/form-data"
+    label
+      |Avatar hochladen
+      input type="file" name="file"
+    input type="submit" value="Upload" class="btn"
+
+  p.mt-2
     a href="/profile/#{session[:uid]}/password" Passwort ändern
 
   form action="/delete_account" method="POST" class="js-confirm"
     input type="hidden" name="username" value=session[:uid]
     input type="submit" value="Account löschen" class="link"
 
-  p
+  div.mt-2
     a.btn href="/logout" Logout
+
 
   script src="/script.js"

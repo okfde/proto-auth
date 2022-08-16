@@ -65,6 +65,10 @@ class App < Sinatra::Base
   get '/profile/:username' do
     authorize!
     raise Forbidden, 'Unauthorized' unless owner?(params[:username])
+
+    user = search_user_by_uid(session[:uid])
+    @user = user
+
     slim :index
   end
 
@@ -253,6 +257,7 @@ class App < Sinatra::Base
 
   post '/delete_account' do
     authorize!
+    raise Forbidden, 'Unauthorized' unless owner?(params[:username])
 
     auth = make_auth(ADMIN_DN, ADMIN_PW)
     udn = user_dn(params[:username])
@@ -269,8 +274,30 @@ class App < Sinatra::Base
         redirect to("/profile?#{status}")
       end
     end
+  end
 
+  post '/upload_avatar' do
+    authorize!
+    unless params[:file] &&
+           (tmpfile = params[:file][:tempfile]) &&
+           (filename = params[:file][:filename])
+      status = "status=Error&message=No file selected"
+      redirect to("/profile?#{status}")
+    end
 
+    auth = make_auth(ADMIN_DN, ADMIN_PW)
+    udn = user_dn(session[:uid])
+    Net::LDAP.open(host: LDAP_HOST,
+                   port: LDAP_PORT,
+                   auth: auth) do |ldap|
+
+      data = tmpfile.read
+      encoded = Base64.strict_encode64(data)
+      ldap.replace_attribute udn, :jpegPhoto, encoded
+    end
+
+    status = "status=Success&message=New avatar set"
+    redirect to("/profile?#{status}")
   end
 
   error 403 do
