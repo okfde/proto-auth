@@ -324,4 +324,10 @@ describe App do
       end
     end
   end
+
+  context 'POST /delete_account' do
+    it 'deletes the user and redirects to login' do
+
+    end
+  end
 end

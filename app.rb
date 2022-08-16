@@ -251,6 +251,28 @@ class App < Sinatra::Base
     end
   end
 
+  post '/delete_account' do
+    authorize!
+
+    auth = make_auth(ADMIN_DN, ADMIN_PW)
+    udn = user_dn(params[:username])
+    Net::LDAP.open(host: LDAP_HOST,
+                   port: LDAP_PORT,
+                   auth: auth) do |ldap|
+
+      if ldap.delete dn: udn
+        session.clear
+        status = "status=Success&message=Account gelöscht"
+        redirect to("/login?#{status}")
+      else
+        status = "status=Error&message=Account konnte nicht gelöscht werden"
+        redirect to("/profile?#{status}")
+      end
+    end
+
+
+  end
+
   error 403 do
     'Error 403 Forbidden, have you logged in properly?'
   end
