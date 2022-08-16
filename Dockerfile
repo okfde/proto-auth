@@ -10,5 +10,6 @@ RUN bundle install
 ADD . $APP_ROOT
 
 EXPOSE 3000
+EXPOSE 587
 
 CMD ["bundle", "exec", "thin", "start"]
