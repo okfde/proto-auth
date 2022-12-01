@@ -7,7 +7,7 @@ gem 'coveralls', require: false
 gem 'net-ldap', '~> 0.17.0'
 gem 'pony', '~> 1.13.1'
 gem 'sanitize', '~> 6.0.0'
-gem 'sinatra', '~> 2.1.0'
+gem 'sinatra', '~> 2.2.3'
 gem 'slim', '~> 4.1.0'
 gem 'sqlite3', '~> 1.4.2'
 gem 'thin', '~> 1.8.1'
